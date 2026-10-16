@@ -19,46 +19,28 @@ public class Principal {
     private static final String OMDB_API_URL = "http://www.omdbapi.com/";
     private static final Logger logger = Logger.getLogger(Principal.class.getName());
 
+    DadosSerie serie = null;
+
     public void exibeMenu(String omdbapiKey) {
         logger.info("Bem-vindo ao ScreenMatch!");
-        logger.info("Digite o nome da série para buscar informações sobre ela:");
-        String nomeSerie = leitura.nextLine();
 
-        var json = consumoAPI.obterDados(OMDB_API_URL + "?t=" + nomeSerie.replace(" ", "+") + "&apikey=" + omdbapiKey);
-        logger.info(json);
-
-        DadosSerie serie = conversor.obterDados(json, DadosSerie.class);
-
-        logger.info("Título: " + serie.title());
-        logger.info("Total de temporadas: " + serie.totalSeasons());
-        logger.info("Ano de lançamento: " + serie.year());
-        logger.info("Escrito por: " + serie.writer());
-        logger.info("Nota do IMDB: " + serie.imdbRating());
-        logger.info("Sinopse: " + serie.plot());
-
+        List<DadosSerie> dadosSeries = new ArrayList<>();
         List<DadosTemporada> temporadas = new ArrayList<>();
-
-        for (int i = 1; i <= serie.totalSeasons(); i++) {
-            json = consumoAPI.obterDados(OMDB_API_URL + "?t=" + nomeSerie.replace(" ", "+") + "&Season=" + i + "&apikey=" + omdbapiKey);
-            var temporada = conversor.obterDados(json, DadosTemporada.class);
-            temporadas.add(temporada);
-        }
-
-        List<Episodio> episodios = temporadas.stream()
-                .map(dadosTemporada -> dadosTemporada.episodios().stream()
-                        .map(dadosEpisodio -> new Episodio(dadosTemporada.numero(), dadosEpisodio)).toList())
-                .flatMap(List::stream).toList();
+        List<Episodio> episodios = new ArrayList<>();
 
         var itemMenu = 0;
         do {
             logger.info("");
             logger.info("Menu:");
-            logger.info("1 - Exibir episódios");
-            logger.info("2 - Exibir episódios com melhor avaliação");
-            logger.info("3 - Exibir episódios a partir de uma data");
-            logger.info("4 - Exibir episódio por título");
-            logger.info("5 - Media de avaliações por temporada");
-            logger.info("6 - Exibir estatísticas da série");
+            logger.info("1 - Buscar Série");
+            logger.info("2 - Listar Séries");
+            logger.info("3 - Selecionar Série");
+            logger.info("4 - Exibir episódios");
+            logger.info("5 - Exibir episódios com melhor avaliação");
+            logger.info("6 - Exibir episódios a partir de uma data");
+            logger.info("7 - Exibir episódio por título");
+            logger.info("8 - Media de avaliações por temporada");
+            logger.info("9 - Exibir estatísticas da série");
             logger.info("0 - Sair");
             try {
                 itemMenu = leitura.nextInt();
@@ -70,17 +52,81 @@ public class Principal {
             leitura.nextLine(); // Limpa o buffer do scanner
 
             switch (itemMenu) {
-                case 1 -> exibirEpisodios(episodios);
-                case 2 -> exibirTop5EpisodiosPorAvaliacao(episodios);
-                case 3 -> exibirEpisodiosAPartirDaDataInformada(episodios);
-                case 4 -> exibirEpisodioPorTitulo(episodios);
-                case 5 -> calcularMediaDasAvaliacoesDeCadaTemporada(temporadas);
-                case 6 -> exibirEstatisticas(episodios);
+                case 1 -> buscarDadosSeriesNaWeb(omdbapiKey, dadosSeries);
+                case 2 -> listarSeries(dadosSeries);
+                case 3 -> selecionarSerie(dadosSeries, temporadas, episodios, omdbapiKey);
+                case 4 -> exibirEpisodios(episodios);
+                case 5 -> exibirTop5EpisodiosPorAvaliacao(episodios);
+                case 6 -> exibirEpisodiosAPartirDaDataInformada(episodios);
+                case 7 -> exibirEpisodioPorTitulo(episodios);
+                case 8 -> calcularMediaDasAvaliacoesDeCadaTemporada(temporadas);
+                case 9 -> exibirEstatisticas(episodios);
                 case 0 -> logger.info("Saindo...");
                 default -> logger.warning("Opção inválida. Tente novamente.");
             }
         } while (itemMenu != 0);
 
+    }
+
+    private void selecionarSerie(List<DadosSerie> dadosSeries, List<DadosTemporada> temporadas, List<Episodio> episodios, String omdbapiKey) {
+        if (dadosSeries.isEmpty()) {
+            logger.warning("Nenhuma série cadastrada. Por favor, busque uma série primeiro.");
+            return;
+        }
+
+        logger.info("Selecione a série desejada:");
+        for (int i = 0; i < dadosSeries.size(); i++) {
+            logger.info((i + 1) + " - " + dadosSeries.get(i));
+        }
+
+        int opcaoSerie = leitura.nextInt();
+        leitura.nextLine(); // Limpa o buffer do scanner
+
+        if (opcaoSerie < 1 || opcaoSerie > dadosSeries.size()) {
+            logger.warning("Opção inválida. Retornando ao menu principal.");
+            return;
+        }
+
+        serie = dadosSeries.get(opcaoSerie - 1);
+        logger.info("Série selecionada: " + serie.title());
+
+        String json;
+        for (int i = 1; i <= serie.totalSeasons(); i++) {
+            json = consumoAPI.obterDados(OMDB_API_URL + "?t=" + serie.title().replace(" ", "+") + "&Season=" + i + "&apikey=" + omdbapiKey);
+            var temporada = conversor.obterDados(json, DadosTemporada.class);
+            temporadas.add(temporada);
+        }
+
+        episodios.clear();
+        episodios.addAll(temporadas.stream()
+                .map(dadosTemporada -> dadosTemporada.episodios().stream()
+                        .map(dadosEpisodio -> new Episodio(dadosTemporada.numero(), dadosEpisodio)).toList())
+                .flatMap(List::stream).toList());
+    }
+
+    private static void listarSeries(List<DadosSerie> dadosSeries) {
+        logger.info("");
+        logger.info("Séries buscadas:");
+        dadosSeries.forEach(dadosSerie -> logger.info(dadosSerie.title() + " (" + dadosSerie.year() + ")"));
+    }
+
+    private void buscarDadosSeriesNaWeb(String omdbapiKey, List<DadosSerie> dadosSeries) {
+        logger.info("Digite o nome da série para buscar informações sobre ela:");
+        String nomeSerie = leitura.nextLine();
+
+        var json = consumoAPI.obterDados(OMDB_API_URL + "?t=" + nomeSerie.replace(" ", "+") + "&apikey=" + omdbapiKey);
+        logger.info(json);
+
+        DadosSerie dadosSerie = conversor.obterDados(json, DadosSerie.class);
+
+        logger.info("Título: " + dadosSerie.title());
+        logger.info("Total de temporadas: " + dadosSerie.totalSeasons());
+        logger.info("Ano de lançamento: " + dadosSerie.year());
+        logger.info("Escrito por: " + dadosSerie.writer());
+        logger.info("Nota do IMDB: " + dadosSerie.imdbRating());
+        logger.info("Sinopse: " + dadosSerie.plot());
+
+        dadosSeries.add(dadosSerie);
     }
 
     private static void exibirEstatisticas(List<Episodio> episodios) {
