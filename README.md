@@ -3,9 +3,9 @@
 This project is a Spring Boot application that provides a console client for interacting with the OMDB API.
 It allows users to search for movies and retrieve information about them using the OMDB API.
 
-The application was built during Alura's course "Java: trabalhando com lambdas, streams e Spring Framework".
+The application was built during Alura's Developer Carrear courses. Uses Spring Boot, Spring Data JPA to create a console application that interacts with the OMDB API.
 
-
+## OMDB API
 OMDB API is a free web service that provides access to movie information, including plot summaries, cast and crew details, ratings, and more. The API can be accessed using HTTP requests and returns data in JSON format.
 
 [OMDB API url](http://www.omdbapi.com/?apikey=[yourkey]&)
@@ -14,3 +14,9 @@ you will need to create an account and get an API key to use the OMDB API. You c
 https://www.omdbapi.com/apikey.aspx
 
 For the code to work, you will need to create an environment variable called OMDB_API_KEY and set it to your API key. This will allow the application to access the OMDB API and retrieve movie information.
+
+## ChatGPT API
+The application also uses the ChatGPT API to provide translate information.
+
+To use the ChatGPT API, you will need to create an account and get an API key. You can see the OpenAI API documentation for more information on how to sign up and obtain an API key.:
+https://developers.openai.com/api/docs
