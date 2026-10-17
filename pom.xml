@@ -48,6 +48,14 @@
 			<version>3.2.2</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<!-- Source: https://mvnrepository.com/artifact/com.openai/openai-java -->
+		<dependency>
+			<groupId>com.openai</groupId>
+			<artifactId>openai-java</artifactId>
+			<version>4.81.0</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

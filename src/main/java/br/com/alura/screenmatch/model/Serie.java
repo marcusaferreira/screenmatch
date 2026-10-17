@@ -1,5 +1,7 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.service.ConsultaChatGPT;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
@@ -18,7 +20,7 @@ public class Serie {
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.title();
         this.totalDeTemporadas = dadosSerie.totalSeasons();
-        this.sinopse = dadosSerie.plot();
+        this.sinopse = ConsultaChatGPT.obterTraducao(dadosSerie.plot());
         this.anoDeLancamento = dadosSerie.year();
         this.autor = dadosSerie.writer();
         this.avaliacao = OptionalDouble.of(Double.parseDouble(dadosSerie.imdbRating())).orElse(0.0);
