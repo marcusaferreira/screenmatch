@@ -1,18 +1,14 @@
 # Getting Started
 
-This project is a Spring Boot application that uses Maven as its build tool.
+ScreenMatch is a Spring Boot console application managed with Maven. For application setup, the OMDb API key, and available console features, see [README.md](README.md).
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Build and test
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.1.1/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/4.1.1/maven-plugin/build-image.html)
+The project requires Java 25 and includes the Maven Wrapper. From the repository root, run:
 
-### Maven Parent overrides
+```bash
+./mvnw test
+./mvnw package
+```
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
-
+For Maven reference material, see the [Apache Maven documentation](https://maven.apache.org/guides/index.html) and the [Spring Boot Maven Plugin documentation](https://docs.spring.io/spring-boot/4.1.1/maven-plugin/).
