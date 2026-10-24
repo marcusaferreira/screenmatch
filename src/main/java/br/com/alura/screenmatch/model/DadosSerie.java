@@ -10,6 +10,9 @@ public record DadosSerie(
         @JsonAlias("Plot") String plot,
         @JsonAlias("Year") String year,
         @JsonAlias("Writer") String writer,
-        @JsonAlias("imdbRating") String imdbRating
+        @JsonAlias("imdbRating") String imdbRating,
+        @JsonAlias("Genre") String genero,
+        @JsonAlias("Actors") String atores,
+        @JsonAlias("Poster") String poster
 ) {
 }
