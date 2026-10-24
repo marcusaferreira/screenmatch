@@ -1,5 +1,8 @@
 package br.com.alura.screenmatch.model;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
 public enum Categoria {
 
     COMEDIA("Comedy"),
@@ -36,7 +39,7 @@ public enum Categoria {
     COMEDIA_DE_MUSICAL("Musical Comedy"),
     COMEDIA_DE_ANIMACAO("Animation Comedy");
 
-    private final String categoriaOmdb;
+    final String categoriaOmdb;
 
     Categoria(String categoriaOmdb) {
         this.categoriaOmdb = categoriaOmdb;

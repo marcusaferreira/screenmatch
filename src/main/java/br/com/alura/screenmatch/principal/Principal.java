@@ -1,11 +1,14 @@
 package br.com.alura.screenmatch.principal;
 
+import br.com.alura.screenmatch.infra.jpa.orm.SerieORMEntity;
+import br.com.alura.screenmatch.infra.jpa.repository.SerieORMRepository;
 import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
 import br.com.alura.screenmatch.model.Episodio;
 import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.service.ConsumoAPI;
 import br.com.alura.screenmatch.service.ConverteDados;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -19,10 +22,18 @@ public class Principal {
 
     private static final String OMDB_API_URL = "https://www.omdbapi.com/";
     private static final Logger logger = Logger.getLogger(Principal.class.getName());
+    private final @Nullable String omdbApiKey;
 
     Serie serie = null;
 
-    public void exibeMenu(String omdbapiKey) {
+    private final SerieORMRepository serieORMRepository;
+
+    public Principal(@Nullable String omdbApiKey, SerieORMRepository serieORMRepository) {
+        this.omdbApiKey = omdbApiKey;
+        this.serieORMRepository = serieORMRepository;
+    }
+
+    public void exibeMenu() {
         IO.println("Bem-vindo ao ScreenMatch!");
 
         List<Serie> series = new ArrayList<>();
@@ -53,9 +64,9 @@ public class Principal {
             leitura.nextLine(); // Limpa o buffer do scanner
 
             switch (itemMenu) {
-                case 1 -> buscarDadosSeriesNaWeb(omdbapiKey, series);
-                case 2 -> listarSeries(series);
-                case 3 -> selecionarSerie(series, temporadas, episodios, omdbapiKey);
+                case 1 -> buscarDadosSeriesNaWeb(omdbApiKey, series);
+                case 2 -> listarSeries();
+                case 3 -> selecionarSerie(series, temporadas, episodios, omdbApiKey);
                 case 4 -> exibirEpisodios(episodios);
                 case 5 -> exibirTop5EpisodiosPorAvaliacao(episodios);
                 case 6 -> exibirEpisodiosAPartirDaDataInformada(episodios);
@@ -105,10 +116,13 @@ public class Principal {
                 .flatMap(List::stream).toList());
     }
 
-    private static void listarSeries(List<Serie> series) {
+    private void listarSeries() {
         IO.println("");
         IO.println("Séries buscadas:");
-        series.forEach(serie -> IO.println(serie.getTitulo() + " (" + serie.getAnoDeLancamento() + ")"));
+        List<Serie> series = serieORMRepository.findAll().stream()
+                .map(SerieORMEntity::toSerie)
+                .toList();
+        series.forEach(serie -> IO.println(serie.toString()));
     }
 
     private void buscarDadosSeriesNaWeb(String omdbapiKey, List<Serie> series) {
@@ -123,6 +137,8 @@ public class Principal {
 
         IO.println(" Série encontrada: ".concat(serieEncontrada.toString()));
 
+        var serieORM = new SerieORMEntity(serieEncontrada);
+        serieORMRepository.save(serieORM);
         series.add(serieEncontrada);
     }
 

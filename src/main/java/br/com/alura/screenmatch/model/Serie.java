@@ -17,6 +17,21 @@ public class Serie {
     private String atores;
     private String poster;
 
+    public Serie() {
+    }
+
+    public Serie(String titulo, Integer totalDeTemporadas, String sinopse, String anoDeLancamento, String autor, Double avaliacao, List<Categoria> generos, String atores, String poster) {
+        this.titulo = titulo;
+        this.totalDeTemporadas = totalDeTemporadas;
+        this.sinopse = sinopse;
+        this.anoDeLancamento = anoDeLancamento;
+        this.autor = autor;
+        this.avaliacao = avaliacao;
+        this.generos = generos;
+        this.atores = atores;
+        this.poster = poster;
+    }
+
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.title();
         this.totalDeTemporadas = dadosSerie.totalSeasons();
