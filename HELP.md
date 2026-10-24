@@ -1,6 +1,6 @@
 # Getting Started
 
-ScreenMatch is a Spring Boot console application managed with Maven. For application setup, the OMDb API key, and available console features, see [README.md](README.md).
+ScreenMatch is a Spring Boot console application managed with Maven. For prerequisites, PostgreSQL and API-key configuration, run instructions, and console features, see [README.md](README.md).
 
 ## Build and test
 
